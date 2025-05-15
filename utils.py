@@ -23,8 +23,8 @@ def extract_pdf_text(uploaded_file):
 
 def validate_structure(data):
     return all(k in data for k in REQUIRED_KEYS)
-
-def analyze_pitch_deck(pitch_text, api_key, return_raw=False):
+    
+    def analyze_pitch_deck(pitch_text, api_key, return_raw=False):
     genai.configure(api_key=api_key)
     safe_pitch_text = pitch_text[:28000].replace("```", "")
     prompt = f"""
@@ -100,11 +100,11 @@ PITCH DECK:
         "max_output_tokens": 4000
     })
 
-    raw_response = None
+    raw = None  # Initialize raw to avoid UnboundLocalError
     for attempt in range(5):
         try:
             response = model.generate_content(prompt)
-            raw = re.sub(r"^``````$", "", raw, flags=re.MULTILINE).strip()
+            raw = response.text.strip().replace("```json", "").replace("```
             # Fix for mismatched braces/brackets
             open_braces = raw.count("{")
             close_braces = raw.count("}")
@@ -118,6 +118,7 @@ PITCH DECK:
             if data and validate_structure(data):
                 return (data, raw) if return_raw else data
         except Exception as e:
+            import time
             time.sleep(2 ** attempt)
             continue
     return (None, raw) if return_raw else None
