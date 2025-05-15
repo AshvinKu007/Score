@@ -1,0 +1,5 @@
+streamlit
+google-generativeai
+PyMuPDF
+reportlab
+json5
