@@ -55,7 +55,7 @@ PITCH DECK:
         "temperature": 0.3,
         "response_mime_type": "application/json",
         "max_output_tokens": 4000
-    })
+    }}
 
     raw_response = None
     for _ in range(3):
