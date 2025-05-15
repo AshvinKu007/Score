@@ -63,7 +63,9 @@ PITCH DECK:
             raw_response = raw  # Save for debugging
 
             # Remove code block markers if present
-            raw = re.sub(r"^```json|^```
+            # Remove code block markers if present
+            raw = re.sub(r"^``````$", "", raw, flags=re.MULTILINE).strip()
+
 
             # Try to find the largest valid JSON object in the response
             json_start = raw.find("{")
