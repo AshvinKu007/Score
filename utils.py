@@ -24,8 +24,9 @@ def extract_pdf_text(uploaded_file):
 def validate_structure(data):
     return all(k in data for k in REQUIRED_KEYS)
     
-    def analyze_pitch_deck(pitch_text, api_key, return_raw=False):
+def analyze_pitch_deck(pitch_text, api_key, return_raw=False):
     genai.configure(api_key=api_key)
+    
     safe_pitch_text = pitch_text[:28000].replace("```", "")
     prompt = f"""
 Generate VALID JSON for an investment scorecard using this structure:
