@@ -104,7 +104,7 @@ PITCH DECK:
     for attempt in range(5):
         try:
             response = model.generate_content(prompt)
-            raw = response.text.strip().replace("```json", "").replace("```
+            raw = response.text.strip().replace("``````", "")
             # Fix for mismatched braces/brackets
             open_braces = raw.count("{")
             close_braces = raw.count("}")
