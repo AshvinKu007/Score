@@ -29,32 +29,31 @@ def analyze_pitch_deck(pitch_text, api_key, return_raw=False):
     prompt = f"""
 Generate VALID JSON for an investment scorecard with this structure:
 {{
-  "StartupName": string,
-  "OverallScore": int,
-  "ExecutiveSummary": [string],
-  "Sector": string,
-  "SectorAnalysisIndia": [string],
-  "TracxnStyleBenchmark": {{"Key": "Value", ...}},
-  "ProductMarketFit": {{"Parameter": {{"Score": int, "Rationale": [string]}, ...}}},
-  "GTMExecution": {{"Parameter": {{"Score": int, "Rationale": [string]}, ...}}},
-  "SupplyChainOps": {{"Parameter": {{"Score": int, "Rationale": [string]}, ...}}},
-  "BusinessModel": {{"Parameter": {{"Score": int, "Rationale": [string]}, ...}}},
-  "FoundersEvaluation": {{"Criteria": {{"Score": int, "Assessment": string}, ...}}},
-  "ExitOptions": [string],
-  "Comments": [string],
-  "CompetitiveLandscape": [{{"Name": string, "USP": string, "BusinessModelAlignment": string}}],
-  "UncertaintyAnalysis": [{{"Category": string, "RiskScore": int, "Rationale": string}}]
+  "StartupName": "string",
+  "OverallScore": 0,
+  "ExecutiveSummary": ["string"],
+  "Sector": "string",
+  "SectorAnalysisIndia": ["string"],
+  "TracxnStyleBenchmark": {{"Key": "Value"}},
+  "ProductMarketFit": {{"Parameter": {{"Score": 0, "Rationale": ["string"]}}}},
+  "GTMExecution": {{"Parameter": {{"Score": 0, "Rationale": ["string"]}}}},
+  "SupplyChainOps": {{"Parameter": {{"Score": 0, "Rationale": ["string"]}}}},
+  "BusinessModel": {{"Parameter": {{"Score": 0, "Rationale": ["string"]}}}},
+  "FoundersEvaluation": {{"Criteria": {{"Score": 0, "Assessment": "string"}}}},
+  "ExitOptions": ["string"],
+  "Comments": ["string"],
+  "CompetitiveLandscape": [{{"Name": "string", "USP": "string", "BusinessModelAlignment": "string"}}],
+  "UncertaintyAnalysis": [{{"Category": "string", "RiskScore": 0, "Rationale": "string"}}]
 }}
 Use only double quotes. Return ONLY valid JSON.
 PITCH DECK:
 {safe_pitch_text}
 """
-
     model = genai.GenerativeModel("gemini-1.5-pro-latest", generation_config={
         "temperature": 0.3,
         "response_mime_type": "application/json",
         "max_output_tokens": 4000
-    }}
+    })
 
     raw_response = None
     for _ in range(3):
@@ -64,7 +63,7 @@ PITCH DECK:
             raw_response = raw  # Save for debugging
 
             # Remove code block markers if present
-            raw = re.sub(r"^```json|^``````$", "", raw, flags=re.MULTILINE).strip()
+            raw = re.sub(r"^```json|^```
 
             # Try to find the largest valid JSON object in the response
             json_start = raw.find("{")
