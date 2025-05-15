@@ -26,8 +26,7 @@ def validate_structure(data):
 def analyze_pitch_deck(pitch_text, api_key, return_raw=False):
     genai.configure(api_key=api_key)
     safe_pitch_text = pitch_text[:28000].replace("```", "")
-
-   prompt = f"""
+    prompt = f"""
 Generate VALID JSON for an investment scorecard with this structure:
 {{
   "StartupName": string,
@@ -50,8 +49,6 @@ Use only double quotes. Return ONLY valid JSON.
 PITCH DECK:
 {safe_pitch_text}
 """
-
-replace("<>", safe_pitch_text)
 
     model = genai.GenerativeModel("gemini-1.5-pro-latest", generation_config={
         "temperature": 0.3,
