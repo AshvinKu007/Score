@@ -229,10 +229,39 @@ def generate_scorecard_pdf(scorecard):
         elements.append(Spacer(1, 12))
     if "CompetitiveLandscape" in scorecard:
         add_competitor_table(scorecard["CompetitiveLandscape"])
-    add_matrix("Product Market Fit", scorecard.get('ProductMarketFit', {}))
-    add_matrix("Go-to-Market Execution", scorecard.get('GTMExecution', {}))
-    add_matrix("Supply Chain & Ops", scorecard.get('SupplyChainOps', {}))
-    add_matrix("Business Model", scorecard.get('BusinessModel', {}))
+    afrom reportlab.platypus import Paragraph, Table, TableStyle, Spacer
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib import colors
+from reportlab.lib.units import inch
+import re
+
+styles = getSampleStyleSheet()
+
+def add_matrix(title, section, elements):
+    elements.append(Paragraph(title, styles['Heading2']))
+    data_rows = [["Parameter", "Score (/100)", "Reason"]]
+    for key, val in section.items():
+        label = re.sub(r"(?<!^)(?=[A-Z])", " ", key)
+        # Expect val to be a list or tuple: [score, reason]
+        if isinstance(val, (list, tuple)) and len(val) == 2:
+            score, reason = val
+        else:
+            score, reason = "-", "-"
+        # Wrap reason in a Paragraph for proper word wrapping
+        data_rows.append([
+            label,
+            str(score),
+            Paragraph(str(reason), styles['Normal'])
+        ])
+    table = Table(data_rows, colWidths=[2.2*inch, 0.8*inch, 3.0*inch], repeatRows=1)
+    table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.lightgrey),
+        ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
+        ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+    ]))
+    elements.append(table)
+    elements.append(Spacer(1, 12))
+
     add_founders(scorecard.get('FoundersEvaluation', {}))
     add_uncertainty_analysis(scorecard.get('UncertaintyAnalysis', {}))
     add_section("Exit Options", scorecard.get('ExitOptions', []))
