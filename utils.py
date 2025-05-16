@@ -115,7 +115,9 @@ PITCH DECK:
             if open_brackets > close_brackets:
                 raw += "]" * (open_brackets - close_brackets)
             data = json5.loads(raw)
+            
             if data and validate_structure(data):
+                data["OverallScore"] = compute_overall_score(data)
                 return (data, raw) if return_raw else data
         except Exception as e:
             print(f"⚠️ Attempt {attempt+1} failed: {e}")
@@ -141,9 +143,7 @@ def compute_overall_score(scorecard):
     overall = round((pmf + gtm + sc + bm + fe) / 5, 2)
     return overall
 
-if data and validate_structure(data):
-    data["OverallScore"] = compute_overall_score(data)
-    return (data, raw) if return_raw else data
+
 
    
 
