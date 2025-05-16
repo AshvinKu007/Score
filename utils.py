@@ -31,7 +31,7 @@ def analyze_pitch_deck(pitch_text, api_key, return_raw=False):
 Generate VALID JSON for an investment scorecard using this structure:
 {{
   "StartupName": "string",
-  "OverallScore": 0-100,
+  "OverallScore": null,
   "ExecutiveSummary": ["string"],
   "Sector": "string",
   "SectorAnalysisIndia": ["string"],
@@ -95,7 +95,7 @@ PITCH DECK:
 """.replace("<<PITCH>>", safe_pitch_text[:28000].replace('"', "'"))
 
     model = genai.GenerativeModel("gemini-1.5-pro-latest", generation_config={
-        "temperature": 0.3,
+        "temperature": 0,
         "response_mime_type": "application/json",
         "max_output_tokens": 4000
     })
@@ -121,6 +121,26 @@ PITCH DECK:
             time.sleep(2 ** attempt)
             continue
     return (None, raw) if return_raw else None
+
+def compute_overall_score(scorecard):
+    def avg_section(section):
+        vals = []
+        for v in section.values():
+            if isinstance(v, (list, tuple)) and len(v) > 0 and isinstance(v[0], (int, float)):
+                vals.append(float(v[0]))
+        return sum(vals) / len(vals) if vals else 0
+
+    pmf = avg_section(scorecard.get("ProductMarketFit", {}))
+    gtm = avg_section(scorecard.get("GTMExecution", {}))
+    sc  = avg_section(scorecard.get("SupplyChainOps", {}))
+    bm  = avg_section(scorecard.get("BusinessModel", {}))
+    fe  = avg_section(scorecard.get("FoundersEvaluation", {}))
+    overall = round((pmf + gtm + sc + bm + fe) / 5, 2)
+    return overall
+
+if data and validate_structure(data):
+    data["OverallScore"] = compute_overall_score(data)
+    return (data, raw) if return_raw else data
 
 def generate_scorecard_pdf(scorecard):
     buffer = BytesIO()
