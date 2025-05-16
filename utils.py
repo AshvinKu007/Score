@@ -118,8 +118,11 @@ PITCH DECK:
             if data and validate_structure(data):
                 return (data, raw) if return_raw else data
         except Exception as e:
-            time.sleep(2 ** attempt)
-            continue
+    print(f"⚠️ Attempt {attempt+1} failed: {e}")
+    print(f"Gemini raw output:\n{raw[:1000]}...\n")  # Add this
+    time.sleep(2 ** attempt)
+    continue
+
     return (None, raw) if return_raw else None
 
 def compute_overall_score(scorecard):
@@ -137,6 +140,10 @@ def compute_overall_score(scorecard):
     fe  = avg_section(scorecard.get("FoundersEvaluation", {}))
     overall = round((pmf + gtm + sc + bm + fe) / 5, 2)
     return overall
+
+if data and validate_structure(data):
+    data["OverallScore"] = compute_overall_score(data)
+    return (data, raw) if return_raw else data
 
    
 
