@@ -138,14 +138,7 @@ def compute_overall_score(scorecard):
     overall = round((pmf + gtm + sc + bm + fe) / 5, 2)
     return overall
 
-    if data and validate_structure(data):
-                # Deterministic overall score
-                data["OverallScore"] = compute_overall_score(data)
-                return (data, raw) if return_raw else data
-        except Exception as e:
-            time.sleep(2 ** attempt)
-            continue
-     return (None, raw) if return_raw else None
+   
 
 def generate_scorecard_pdf(scorecard):
     buffer = BytesIO()
